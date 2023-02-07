@@ -113,7 +113,6 @@ const App = () => {
 
   return (
     <div>
-      <h1>Notes</h1>
       <Notification message={message} status={status}/>
       <h2>Phonebook</h2>
       <PersonForm 
