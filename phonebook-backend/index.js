@@ -10,6 +10,34 @@ app.use(express.json())
 app.use(morgan('tiny'))
 app.use(cors())
 
+const requestLogger = (request, response, next) => {
+  console.log('Method:', request.method)
+  console.log('Path:  ', request.path)
+  console.log('Body:  ', request.body)
+  console.log('---')
+  next()
+}
+
+app.use(requestLogger)
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({error: 'unknown endpoint'})
+}
+
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+
+  next(error)
+}
+
+app.use(errorHandler)
+
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
 })
@@ -40,21 +68,21 @@ app.get('/api/persons/:id', (request, response, next) => {
 app.post('/api/persons', (request,response) => {
   const body = request.body
 
-  if (body.name) {
-    return response.status(400).json({
-      error: 'name missing'
-    })
-  }
-  if (body.number) {
-    return response.status(400).json({
-      error: 'number missing'
-    })
-  }
-  if (persons.find(person => person.name === body.name)) {
-    return response.status(400).json({
-      error: 'name must be unique'
-    })
-  }
+  // if (body.name) {
+  //   return response.status(400).json({
+  //     error: 'name missing'
+  //   })
+  // }
+  // if (body.number) {
+  //   return response.status(400).json({
+  //     error: 'number missing'
+  //   })
+  // }
+  // if (persons.find(person => person.name === body.name)) {
+  //   return response.status(400).json({
+  //     error: 'name must be unique'
+  //   })
+  // }
 
   const person = new Person({
     name: body.name,
