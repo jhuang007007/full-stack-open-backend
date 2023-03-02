@@ -1,13 +1,11 @@
 require('dotenv').config()
 const express = require('express')
-const morgan = require('morgan')
 const cors = require('cors')
 const app = express()
 const Person = require('./models/person')
 
 app.use(express.static('build'))
 app.use(express.json())
-app.use(morgan('tiny'))
 app.use(cors())
 
 const requestLogger = (request, response, next) => {
@@ -19,12 +17,6 @@ const requestLogger = (request, response, next) => {
 }
 
 app.use(requestLogger)
-
-const unknownEndpoint = (request, response) => {
-  response.status(404).send({error: 'unknown endpoint'})
-}
-
-app.use(unknownEndpoint)
 
 const errorHandler = (error, request, response, next) => {
   console.error(error.message)
@@ -43,7 +35,7 @@ app.get('/', (request, response) => {
 })
 
 app.get('/info', (request, response) => {
-  response.send(`<p>Phonebook has info for ${persons.length} people <br/> <br/> ${Date()}</p>`)
+  response.send(`<p>Phonebook has info for ${Person.length} people <br/> <br/> ${Date()}</p>`)
 })
 
 app.get('/api/persons', (request, response) => {
@@ -68,17 +60,17 @@ app.get('/api/persons/:id', (request, response, next) => {
 app.post('/api/persons', (request,response) => {
   const body = request.body
 
-  // if (body.name) {
-  //   return response.status(400).json({
-  //     error: 'name missing'
-  //   })
-  // }
-  // if (body.number) {
-  //   return response.status(400).json({
-  //     error: 'number missing'
-  //   })
-  // }
-  // if (persons.find(person => person.name === body.name)) {
+  if (body.name === undefined) {
+    return response.status(400).json({
+      error: 'name missing'
+    })
+  }
+  if (body.number === undefined) {
+    return response.status(400).json({
+      error: 'number missing'
+    })
+  }
+  // if (Person.find(person => person.name === body.name)) {
   //   return response.status(400).json({
   //     error: 'name must be unique'
   //   })
@@ -96,7 +88,7 @@ app.post('/api/persons', (request,response) => {
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))
