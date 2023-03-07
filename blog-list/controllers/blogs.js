@@ -3,16 +3,16 @@ const Blog = require('../models/blog')
 
 blogsRouter.get('/', (request, response) => {
   Blog.find({})
-  .then(Blogs => {
-    response.json(Blogs)
+  .then(blogs => {
+    response.json(blogs.map(blog => blog.toJSON()))
   })
 })
 
 blogsRouter.get('/:id', (request, response, next) => {
   Blog.findById(request.params.id)
-    .then(Blog => {
-      if (Blog) {
-        response.json(Blog)
+    .then(blog => {
+      if (blog) {
+        response.json(blog.toJSON())
       } else {
         response.status(404).end()
       }
@@ -23,14 +23,16 @@ blogsRouter.get('/:id', (request, response, next) => {
 blogsRouter.post('/', (request, response, next) => {
   const body = request.body
 
-  const Blog = new Blog({
-    content: body.content,
-    important: body.important || false,
+  const blog = new Blog({
+    title: body.title,
+    author: body.author,
+    url: body.url,
+    likes: body.likes,
   })
 
-  Blog.save()
+  blog.save()
     .then(savedBlog => {
-      response.json(savedBlog)
+      response.json(savedBlog.toJSON())
     })
     .catch(error => next(error))
 })
@@ -46,14 +48,17 @@ blogsRouter.delete('/:id', (request, response, next) => {
 blogsRouter.put('/:id', (request, response, next) => {
   const body = request.body
 
-  const Blog = {
-    content: body.content,
-    important: body.important,
-  }
+  const Blog = new Blog({
+    title: body.title,
+    author: body.author,
+    url: body.url,
+    likes: body.likes,
+  })
 
-  Blog.findByIdAndUpdate(request.params.id, Blog, { new: true })
+
+  Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
     .then(updatedBlog => {
-      response.json(updatedBlog)
+      response.json(updatedBlog.toJSON())
     })
     .catch(error => next(error))
 })
