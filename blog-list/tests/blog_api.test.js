@@ -59,12 +59,17 @@ const initialBlogs = [
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  for(const blog of initialBlogs) {
-    const blogObject = new Blog(blog)
-  }
   let blogObject = new Blog(initialBlogs[0])
   await blogObject.save()
   blogObject = new Blog(initialBlogs[1])
+  await blogObject.save()
+  blogObject = new Blog(initialBlogs[2])
+  await blogObject.save()
+  blogObject = new Blog(initialBlogs[3])
+  await blogObject.save()
+  blogObject = new Blog(initialBlogs[4])
+  await blogObject.save()
+  blogObject = new Blog(initialBlogs[5])
   await blogObject.save()
 })
 
@@ -78,7 +83,7 @@ test('blogs are returned as json', async () => {
 test('all blogs are returned', async () => {
   const response = await api.get('/api/blogs')
 
-  expect(response.body).toHaveLength(initialBlogs.length())
+  expect(response.body).toHaveLength(initialBlogs.length)
 })
 
 afterAll(async () => {
