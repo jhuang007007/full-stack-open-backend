@@ -5,22 +5,15 @@ const app = require('../app')
 const api = supertest(app)
 
 const Blog = require('../models/blog')
+const blog = require('../models/blog')
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-
-  let blogObject = new Blog(helper.initialBlogs[0])
-  await blogObject.save()
-  blogObject = new Blog(helper.initialBlogs[1])
-  await blogObject.save()
-  blogObject = new Blog(helper.initialBlogs[2])
-  await blogObject.save()
-  blogObject = new Blog(helper.initialBlogs[3])
-  await blogObject.save()
-  blogObject = new Blog(helper.initialBlogs[4])
-  await blogObject.save()
-  blogObject = new Blog(helper.initialBlogs[5])
-  await blogObject.save()
+  
+  const blogObjects = helper.initialBlogs
+    .map(blog => new Blog(blog))
+  const promiseArray = blogObjects.map(blog => blog.save())
+  await Promise.all(promiseArray)
 })
 
 test('blogs are returned as json', async () => {
@@ -61,9 +54,10 @@ test('a valid blog can be added', async () => {
   )
 })
 
-test('blog without content is not added', async () => {
+test('blog without title is not added', async () => {
   const newBlog = {
-    content: ''
+    author: 'testauthordeletelater',
+    url: 'testurldeletelater'
   }
 
   await api
@@ -71,9 +65,42 @@ test('blog without content is not added', async () => {
     .send(newBlog)
     .expect(400)
 
-    const blogsAtEnd = await helper.blogsInDb()
+  const blogsAtEnd = await helper.blogsInDb()
 
   expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+})
+
+test('blog without url is not added', async () => {
+  const newBlog = {
+    title: 'testtitledeletlater',
+    author: 'testauthordeletelater',
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+
+  const blogsAtEnd = await helper.blogsInDb()
+
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+})
+
+test('a blog missing the likes property will have a default of 0 likes', async () => {  
+  const newBlog = {
+    title: 'testtitledeletlater',
+    author: 'testauthordeletelater',
+    url: 'testurldeletelater'
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  const newBlogIndex = blogsAtEnd.length - 1
+
+  expect(blogsAtEnd[newBlogIndex].likes).toBe(0)
 })
 
 test('a specific blog can be viewed', async () => {
@@ -87,6 +114,7 @@ test('a specific blog can be viewed', async () => {
     .expect('Content-Type', /application\/json/)
 
   expect(resultBlog.body).toEqual(blogToView)
+  expect(resultBlog).toBeDefined()
 })
 
 test('a blog can be deleted', async () => {
