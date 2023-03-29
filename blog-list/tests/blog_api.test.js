@@ -1,11 +1,11 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
-const helper = require('./test_helper')
 const app = require('../app')
+
 const api = supertest(app)
 
 const Blog = require('../models/blog')
-const blog = require('../models/blog')
+const helper = require('./test_helper')
 
 beforeEach(async () => {
   await Blog.deleteMany({})
@@ -134,7 +134,6 @@ test('a blog can be deleted', async () => {
     const titles = blogsAtEnd.map(r => r.title)
 
     expect(titles).not.toContain(blogToDelete.content)
-
 })
 
 
