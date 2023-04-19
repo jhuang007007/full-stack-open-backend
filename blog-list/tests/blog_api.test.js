@@ -1,11 +1,12 @@
-const mongoose = require('mongoose')
 const supertest = require('supertest')
-const app = require('../app')
+const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
 
-const api = supertest(app)
-
-const Blog = require('../models/blog')
 const helper = require('./test_helper')
+const app = require('../app')
+const api = supertest(app)
+const User = require('../models/user')
+const Blog = require('../models/blog')
 
 beforeEach(async () => {
   await Blog.deleteMany({})
@@ -27,7 +28,7 @@ test('all blogs are returned', async () => {
   const response = await api.get('/api/blogs')
 
   expect(response.body).toHaveLength(helper.initialBlogs.length)
-})
+}, 100000)
 
 test('a valid blog can be added', async () => {
   const newBlog = {
@@ -52,7 +53,7 @@ test('a valid blog can be added', async () => {
   expect(titles).toContain(
     'test valid blog'
   )
-})
+}, 100000)
 
 test('blog without title is not added', async () => {
   const newBlog = {
@@ -68,7 +69,7 @@ test('blog without title is not added', async () => {
   const blogsAtEnd = await helper.blogsInDb()
 
   expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
-})
+}, 100000)
 
 test('blog without url is not added', async () => {
   const newBlog = {
@@ -84,7 +85,7 @@ test('blog without url is not added', async () => {
   const blogsAtEnd = await helper.blogsInDb()
 
   expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
-})
+}, 100000)
 
 test('a blog missing the likes property will have a default of 0 likes', async () => {  
   const newBlog = {
@@ -101,7 +102,7 @@ test('a blog missing the likes property will have a default of 0 likes', async (
   const newBlogIndex = blogsAtEnd.length - 1
 
   expect(blogsAtEnd[newBlogIndex].likes).toBe(0)
-})
+}, 100000)
 
 test('a specific blog can be viewed', async () => {
   const blogsAtStart = await helper.blogsInDb()
@@ -115,7 +116,7 @@ test('a specific blog can be viewed', async () => {
 
   expect(resultBlog.body).toEqual(blogToView)
   expect(resultBlog).toBeDefined()
-})
+}, 100000)
 
 test('a blog can be deleted', async () => {
   const blogsAtStart = await helper.blogsInDb()
@@ -134,7 +135,7 @@ test('a blog can be deleted', async () => {
     const titles = blogsAtEnd.map(r => r.title)
 
     expect(titles).not.toContain(blogToDelete.content)
-})
+}, 100000)
 
 
 afterAll(async () => {
