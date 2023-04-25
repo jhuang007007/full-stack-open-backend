@@ -60,9 +60,27 @@ const App = () => {
     blogService
       .create(blogObject)
       .then(returnedBlog => {
+        console.log(returnedBlog)
         setBlogs(blogs.concat(returnedBlog))
         blogFormRef.current.toggleVisibility()
       })
+  }
+
+  const likeBlog = (id, blogObject) => {
+    const index = blogs.findIndex(blog => blog.id === id)
+    blogService
+      .update(id, blogObject)
+      .then(returnedBlog => {
+        let newBlog = [...blogs]
+        newBlog[index] = returnedBlog
+        setBlogs(newBlog)
+    })
+  }
+
+  const sortBlog = (event) => {
+    event.preventDefault()
+    const sortedBlogs = blogs.sort((a,b) => b.likes - a.likes)
+    setBlogs(sortedBlogs)
   }
 
   const loginForm = () => (
@@ -116,8 +134,9 @@ const App = () => {
             <BlogForm createBlog={addBlog}></BlogForm>
           </Togglable>
           <h2>blogs</h2>
+          <button onClick={sortBlog}>sort blogs</button>
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} user={user}/>
+            <Blog key={blog.id} blog={blog} likeBlogHandler={likeBlog} />
           )}
         </div>
       }

@@ -1,7 +1,8 @@
 import { useState } from "react"
 
-const Blog = ({ blog, user }) => {
+const Blog = ({ blog, likeBlogHandler }) => {
   const [visible, setVisible] = useState(false)
+  const [newLikes, setNewLikes] = useState(blog.likes)
   
   const hideWhenVisible = { display: visible ? 'none' : '' }
   const showWhenVisible = { display: visible ? '' : 'none' }
@@ -19,8 +20,22 @@ const Blog = ({ blog, user }) => {
   }
 
   const likeButton = () => (
-    <button>like</button>
+    <button onClick={likeBlog}>like</button>
   )
+
+  const likeBlog = (event) => {
+    event.preventDefault()
+    setNewLikes(newLikes + 1)
+
+    likeBlogHandler(blog.id, 
+      {
+        user: blog.user.id,
+        title: blog.title,
+        author: blog.author,
+        likes: newLikes + 1,
+        url: blog.url
+      })
+  }
   
   return (
     <div style={blogStyle}>
@@ -31,9 +46,9 @@ const Blog = ({ blog, user }) => {
         <button onClick={toggleVisibility}>details</button>
       </div>
       <div style={showWhenVisible}>
-        <p>likes: {blog.likes} {likeButton()}</p>
+        <p>likes: {newLikes} {likeButton()}</p>
         <p>{blog.url}</p>
-        <p>posted by {blog.user.username}{!blog.user.username && user.name}</p>
+        <p>posted by {blog.user.name}</p>
         <button onClick={toggleVisibility}>hide details</button>
       </div>
     </div>
