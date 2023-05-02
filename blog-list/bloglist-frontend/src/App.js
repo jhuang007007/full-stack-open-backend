@@ -21,7 +21,7 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs(blogs.sort((a,b) => b.likes - a.likes))
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const App = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    
+
     try {
       const user = await loginService.login({
         username, password,
@@ -74,7 +74,7 @@ const App = () => {
         let newBlog = [...blogs]
         newBlog[index] = returnedBlog
         setBlogs(newBlog)
-    })
+      })
   }
 
   const deleteBlog = (id) => {
@@ -88,7 +88,7 @@ const App = () => {
     <form onSubmit={handleLogin}>
       <div>
         username
-          <input
+        <input
           type="text"
           value={username}
           name="Username"
@@ -97,14 +97,14 @@ const App = () => {
       </div>
       <div>
           password
-            <input
-            type="password"
-            value={password}
-            name="Password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button type="submit">login</button>
+        <input
+          type="password"
+          value={password}
+          name="Password"
+          onChange={({ target }) => setPassword(target.value)}
+        />
+      </div>
+      <button type="submit">login</button>
     </form>
   )
 
@@ -128,7 +128,7 @@ const App = () => {
 
       {!user && loginForm()}
 
-      {user && 
+      {user &&
         <div>
           <p>{user.name} logged in {logoutButton()}</p>
           <Togglable buttonLabel="new blog" ref={blogFormRef}>

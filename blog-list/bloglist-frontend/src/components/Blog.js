@@ -1,9 +1,9 @@
-import { useState } from "react"
+import { useState } from 'react'
 
 const Blog = ({ blog, user, likeBlogHandler, deleteBlogHandler }) => {
   const [visible, setVisible] = useState(false)
   const [newLikes, setNewLikes] = useState(blog.likes)
-  
+
   const hideWhenVisible = { display: visible ? 'none' : '' }
   const showWhenVisible = { display: visible ? '' : 'none' }
 
@@ -27,7 +27,7 @@ const Blog = ({ blog, user, likeBlogHandler, deleteBlogHandler }) => {
     event.preventDefault()
     setNewLikes(newLikes + 1)
 
-    likeBlogHandler(blog.id, 
+    likeBlogHandler(blog.id,
       {
         user: blog.user.id,
         title: blog.title,
@@ -40,13 +40,13 @@ const Blog = ({ blog, user, likeBlogHandler, deleteBlogHandler }) => {
   const deleteBlog = (event) => {
     event.preventDefault()
     const confirmation = window.confirm(`remove blog "${blog.title}" by ${blog.author}`)
-    if (confirmation === true) deleteBlogHandler(blog.id) 
+    if (confirmation === true) deleteBlogHandler(blog.id)
   }
-  
+
   return (
     <div style={blogStyle}>
 
-      <h1>
+      <h1 className='blog'>
         {blog.title} {blog.author}
       </h1>
 
@@ -54,15 +54,15 @@ const Blog = ({ blog, user, likeBlogHandler, deleteBlogHandler }) => {
         <button onClick={toggleVisibility}>details</button>
       </div>
 
-      <div style={showWhenVisible}>
+      <div style={showWhenVisible} className='details'>
         <p>likes: {newLikes} {likeButton()}</p>
         <p>{blog.url}</p>
         <p>posted by {blog.user.name}</p>
         <button onClick={toggleVisibility}>hide details</button>
         {user.username === blog.user.username && <button onClick={deleteBlog}>delete blog</button>}
       </div>
-      
+
     </div>
-)}
+  )}
 
 export default Blog
