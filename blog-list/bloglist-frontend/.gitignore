@@ -7,6 +7,9 @@
 
 # testing
 /coverage
+/cypress/fixtures
+/cypress/videos
+/cypress/support
 
 # production
 /build
@@ -21,3 +24,5 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.eslintrc.js
+.eslintignore

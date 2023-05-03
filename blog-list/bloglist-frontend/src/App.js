@@ -17,12 +17,21 @@ const App = () => {
   const [user, setUser] = useState(null)
 
   const blogFormRef = useRef()
+  const blogUpdated = useRef(false)
+
+  const sortBlogs = (blogs) => {
+    setBlogs(blogs.sort((a,b) => b.likes - a.likes))
+    blogUpdated.current = true
+  }
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs.sort((a,b) => b.likes - a.likes))
-    )
-  }, [])
+    if(blogs && !blogUpdated.current) {
+      blogService.getAll().then(blogs =>
+        sortBlogs(blogs)
+      )
+    }
+    blogUpdated.current = false
+  }, [blogs])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -89,6 +98,7 @@ const App = () => {
       <div>
         username
         <input
+          id="username"
           type="text"
           value={username}
           name="Username"
@@ -96,15 +106,18 @@ const App = () => {
         />
       </div>
       <div>
-          password
+        password
         <input
+          id="password"
           type="password"
           value={password}
           name="Password"
           onChange={({ target }) => setPassword(target.value)}
         />
       </div>
-      <button type="submit">login</button>
+      <button id="login-button" type="submit">
+        login
+      </button>
     </form>
   )
 
